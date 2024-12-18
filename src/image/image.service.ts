@@ -190,7 +190,7 @@ export class ImageService {
   }
 
   private generateDynamicPrompt(fields: string[]): string {
-    const prompt = `Goal:\nEfficiently extract structured data from images with service details using OCR technology, ensuring accurate recognition and clear distinction of ambiguous values.\n\nInstruction:\nExtract the following fields from the given image. The image contains details about services. For each field listed below, attempt to identify and extract the value from the image. If a field cannot be found or determined, explicitly mark it as Not Found. Provide the output in a tabular format for each field. The fields to extract are:\n\n${fields
+    const prompt = `Goal:\nEfficiently extract structured data from images with service details using OCR technology, ensuring accurate recognition and clear distinction of ambiguous values.\n\nInstruction:\nExtract the following fields from the given image. The image contains details about services. For each field listed below, attempt to identify and extract the value from the image. If a field cannot be found or determined, explicitly mark it as Not Found. Provide the output in a json format for each field. The fields to extract are:\n\n${fields
       .map((field) => `${field}`)
       .join(
         '\n',
