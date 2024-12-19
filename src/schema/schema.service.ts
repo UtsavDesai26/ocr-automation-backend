@@ -83,16 +83,18 @@ export class SchemaService {
     analysisResult: Record<string, any>,
   ): Promise<{ message: string }> {
     try {
+      const snakeTableName = this.convertToSnakeCase(tableName);
       const schema = await this.findSchemaByName(tableName);
-
-      const columns = schema.fields.map((field) => `"${field.name}"`);
+      const columns = schema.fields.map(
+        (field) => `"${this.convertToSnakeCase(field.name)}"`,
+      );
       const values = schema.fields.map((field) => analysisResult[field.name]);
 
       await this.schemaRepository.query(
         `
-        INSERT INTO "${tableName}" ("userid", ${columns.join(', ')})
-        VALUES ($1, ${columns.map((_, i) => `$${i + 2}`).join(', ')})
-      `,
+          INSERT INTO "${snakeTableName}" ("user_id", ${columns.join(', ')})
+          VALUES ($1, ${columns.map((_, i) => `$${i + 2}`).join(', ')})
+        `,
         [userId, ...values],
       );
 
@@ -170,14 +172,18 @@ export class SchemaService {
     fields: { name: string; type: string }[],
   ): Promise<void> {
     try {
+      // Pluralize the table name and convert to snake_case
+      const snakeTableName = this.convertToSnakeCase(tableName);
+
+      // Apply snake_case to each field name
       const columnsDefinition = fields
-        .map(({ name, type }) => `"${name}" ${type}`)
+        .map(({ name, type }) => `"${this.convertToSnakeCase(name)}" ${type}`)
         .join(', ');
 
       const query = `
-        CREATE TABLE IF NOT EXISTS "${tableName}" (
-          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-          userId VARCHAR(255) NOT NULL,
+        CREATE TABLE IF NOT EXISTS "${snakeTableName}" (
+          id SERIAL PRIMARY KEY,  -- Use SERIAL for auto-incrementing integer
+          user_id VARCHAR(255) NOT NULL,  -- Change to snake_case
           ${columnsDefinition}
         );
       `;
@@ -186,6 +192,13 @@ export class SchemaService {
     } catch (error) {
       this.handleError(error, `Failed to create table '${tableName}'`);
     }
+  }
+
+  // Helper method to convert camelCase or PascalCase to snake_case
+  private convertToSnakeCase(str: string): string {
+    return str
+      .replace(/([A-Z])/g, (match) => `_${match.toLowerCase()}`)
+      .replace(/^_/, '');
   }
 
   /**

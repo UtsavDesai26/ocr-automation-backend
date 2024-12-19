@@ -3,7 +3,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Users } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,44 +11,104 @@ import { CreateUserDto } from './dto/create-user.dto';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(Users)
-    private readonly userRepository: Repository<Users>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<Users> {
-    const { userId, name, mobileNo, gender, email, country } = createUserDto;
+  private mapDtoToEntity(createUserDto: CreateUserDto): User {
+    const {
+      requestId,
+      responsePath,
+      triggeredAt,
+      botId,
+      botConnectionId,
+      botName,
+      botPlatform,
+      botLanguage,
+      currentLanguage,
+      channelId,
+      userId,
+      userHandle,
+      userName,
+      userFirstName,
+      userLastName,
+      userGender,
+      userLocale,
+      userEmail,
+      userPhone,
+      userCountry,
+      userTimezone,
+      userCompany,
+      userExternalId,
+      userFirstActive,
+      userLastActive,
+      datetimeReceived,
+      message,
+      messageType,
+      attributes,
+      command,
+      metadata,
+    } = createUserDto;
+
+    return {
+      requestId,
+      responsePath,
+      triggeredAt,
+      botId,
+      botConnectionId,
+      botName,
+      botPlatform,
+      botLanguage,
+      currentLanguage,
+      channelId,
+      userId,
+      userHandle,
+      userName,
+      userFirstName,
+      userLastName,
+      userGender,
+      userLocale,
+      userEmail,
+      userPhone,
+      userCountry,
+      userTimezone,
+      userCompany,
+      userExternalId,
+      userFirstActive,
+      userLastActive,
+      datetimeReceived,
+      message,
+      messageType,
+      attributes,
+      command,
+      metadata,
+    } as User;
+  }
+
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const user = this.mapDtoToEntity(createUserDto);
 
     try {
+      // Check if the user already exists
       const existingUser = await this.userRepository.findOne({
-        where: { userId },
+        where: { userId: user.userId },
       });
 
       if (existingUser) {
-        existingUser.name = name;
-        existingUser.mobileNo = mobileNo;
-        existingUser.gender = gender;
-        existingUser.email = email;
-        existingUser.country = country;
-
+        // Update existing user
+        Object.assign(existingUser, user);
         return this.userRepository.save(existingUser);
       }
 
-      const newUser = this.userRepository.create({
-        userId,
-        name,
-        mobileNo,
-        gender,
-        email,
-        country,
-      });
-
+      // Create new user
+      const newUser = this.userRepository.create(user);
       return this.userRepository.save(newUser);
     } catch (error) {
       return this.handleError(error, 'Error creating user');
     }
   }
 
-  async getAllUsers(): Promise<Users[]> {
+  async getAllUsers(): Promise<User[]> {
     try {
       return this.userRepository.find();
     } catch (error) {

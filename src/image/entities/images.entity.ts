@@ -3,25 +3,29 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('images')
 export class Image {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column()
+  @Column({ name: 'user_id' })
   userId: string;
 
-  @Column()
+  @Column({ name: 'schema_name' })
   schemaName: string;
 
-  @Column()
+  @Column({ name: 'image_url' })
   imageUrl: string;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ name: 'analysis_result', type: 'jsonb', nullable: true })
   analysisResult: Record<string, any>;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 }

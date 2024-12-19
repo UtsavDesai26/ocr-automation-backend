@@ -1,8 +1,33 @@
 export class CreateUserDto {
+  responsePath?: string;
+  requestId?: string;
+  triggeredAt?: Date;
+  botId?: string;
+  botConnectionId?: string;
+  botName?: string;
+  botPlatform?: string;
+  botLanguage?: string;
+  currentLanguage?: string;
+  channelId?: string;
   userId: string;
-  name: string;
-  mobileNo: string;
-  gender: string;
-  email: string;
-  country: string;
+  userHandle?: string;
+  userName: string;
+  userFirstName: string;
+  userLastName: string;
+  userGender?: string;
+  userLocale?: string;
+  userEmail?: string;
+  userPhone?: string;
+  userCountry?: string;
+  userTimezone?: string;
+  userCompany?: string;
+  userExternalId?: string;
+  userFirstActive?: Date;
+  userLastActive?: Date;
+  datetimeReceived?: Date;
+  message?: string;
+  messageType?: string;
+  attributes?: Record<string, any>;
+  command?: string;
+  metadata?: Record<string, any>;
 }

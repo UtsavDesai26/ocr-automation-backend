@@ -4,26 +4,22 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('schemas')
 export class Schema {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column()
+  @Column({ name: 'name' })
   name: string;
 
-  @Column('jsonb')
+  @Column({ name: 'fields', type: 'jsonb' })
   fields: { name: string; type: string }[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
 }
